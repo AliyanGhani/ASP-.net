@@ -1,0 +1,811 @@
+﻿@using Admin.Models
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+
+    var totalProducts = ViewBag.TotalProducts ?? 0;
+    var totalCustomers = ViewBag.TotalCustomers ?? 0;
+    var totalOrders = ViewBag.TotalOrders ?? 0;
+    var totalRevenue = ViewBag.TotalRevenue ?? 0;
+    var recentOrders = ViewBag.RecentOrders as List<Order> ?? new List<Order>();
+}
+
+<div class="admin-dashboard">
+    <!-- Welcome Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="welcome-text">
+                <h1><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h1>
+                <p>Welcome back, Administrator! Here's your store performance summary.</p>
+            </div>
+            <div class="header-actions">
+                <div class="date-display">
+                    <i class="fas fa-calendar"></i>
+                    <span>@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card product-card">
+            <div class="stat-icon">
+                <i class="fas fa-boxes"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">@totalProducts</h3>
+                <p class="stat-label">Total Products</p>
+                <div class="stat-trend">
+                    <i class="fas fa-arrow-up trend-up"></i>
+                    <span>Active in store</span>
+                </div>
+            </div>
+            <div class="card-hover-effect"></div>
+        </div>
+
+        <div class="stat-card customer-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">@totalCustomers</h3>
+                <p class="stat-label">Total Customers</p>
+                <div class="stat-trend">
+                    <i class="fas fa-user-plus trend-up"></i>
+                    <span>Registered users</span>
+                </div>
+            </div>
+            <div class="card-hover-effect"></div>
+        </div>
+
+        <div class="stat-card order-card">
+            <div class="stat-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">@totalOrders</h3>
+                <p class="stat-label">Total Orders</p>
+                <div class="stat-trend">
+                    <i class="fas fa-chart-line trend-up"></i>
+                    <span>All time orders</span>
+                </div>
+            </div>
+            <div class="card-hover-effect"></div>
+        </div>
+
+        <div class="stat-card revenue-card">
+            <div class="stat-icon">
+                <i class="fas fa-coins"></i> <!-- Changed from rupee-sign to coins -->
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">₨@totalRevenue.ToString("N0")</h3> <!-- Pakistan Rupee Sign -->
+                <p class="stat-label">Total Revenue</p>
+                <div class="stat-trend">
+                    <i class="fas fa-wallet trend-up"></i>
+                    <span>Lifetime earnings</span>
+                </div>
+            </div>
+            <div class="card-hover-effect"></div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Recent Orders Grid -->
+    <div class="dashboard-grid">
+        <!-- Quick Actions -->
+        <div class="grid-card quick-actions-card">
+            <div class="card-header">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <p>Manage your store efficiently</p>
+            </div>
+            <div class="card-body">
+                <div class="actions-grid">
+                    <a href="@Url.Action("AddProduct", "Admin")" class="action-item">
+                        <div class="action-icon add-product">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Add Product</h4>
+                            <p>Create new product listing</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+
+                    <a href="@Url.Action("Products", "Admin")" class="action-item">
+                        <div class="action-icon manage-products">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Manage Products</h4>
+                            <p>View and edit products</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+
+                    <a href="@Url.Action("Orders", "Admin")" class="action-item">
+                        <div class="action-icon view-orders">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>View Orders</h4>
+                            <p>Process customer orders</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+
+                    <a href="@Url.Action("Customers", "Admin")" class="action-item">
+                        <div class="action-icon manage-customers">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Manage Customers</h4>
+                            <p>Customer database</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+
+                    <a href="@Url.Action("Categories", "Admin")" class="action-item">
+                        <div class="action-icon categories">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Categories</h4>
+                            <p>Product categories</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+
+                    <a href="@Url.Action("OccasionMessages", "Admin")" class="action-item">
+                        <div class="action-icon occasions">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Occasion Messages</h4>
+                            <p>Manage greetings</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="grid-card recent-orders-card">
+            <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Recent Orders</h3>
+                <p>Latest customer activities</p>
+            </div>
+            <div class="card-body">
+                @if (recentOrders.Any())
+                {
+                    <div class="orders-list">
+                        @foreach (var order in recentOrders.Take(6))
+                        {
+                            <div class="order-item">
+                                <div class="order-avatar">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                                <div class="order-details">
+                                    <h4>Order #@order.OrderId</h4>
+                                    <p>@order.Customer?.F_name @order.Customer?.L_name</p>
+                                    <div class="order-meta">
+                                        <span class="order-date">
+                                            <i class="fas fa-calendar"></i>
+                                            @order.OrderDate.ToString("MMM dd, yyyy")
+                                        </span>
+                                        <span class="order-amount">
+                                            <i class="fas fa-coins"></i> <!-- Changed icon -->
+                                            ₨@order.TotalAmount.ToString("N0") <!-- Pakistan Rupee Sign -->
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="order-status">
+                                    <span class="status-badge @GetStatusBadgeClass(order.Status)">@order.Status</span>
+                                    <span class="payment-badge @GetPaymentBadgeClass(order.PaymentStatus)">@order.PaymentStatus</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <a href="@Url.Action("Orders", "Admin")" class="view-all-link">
+                            View All Orders <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h4>No Orders Yet</h4>
+                        <p>Customer orders will appear here</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="metrics-section">
+        <div class="grid-card metrics-card">
+            <div class="card-header">
+                <h3><i class="fas fa-chart-bar"></i> Performance Metrics</h3>
+                <p>Store performance insights</p>
+            </div>
+            <div class="card-body">
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-icon conversion">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h4>@(totalCustomers > 0 ? ((totalOrders * 100) / totalCustomers).ToString("0") : "0")%</h4>
+                            <p>Conversion Rate</p>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-icon average">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h4>₨@(totalOrders > 0 ? (totalRevenue / totalOrders).ToString("0") : "0")</h4> <!-- Pakistan Rupee Sign -->
+                            <p>Average Order Value</p>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-icon revenue">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h4>₨@((totalRevenue / 1000).ToString("0"))k</h4> <!-- Pakistan Rupee Sign -->
+                            <p>Monthly Revenue</p>
+                        </div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-icon growth">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h4>+@(totalOrders / 10)%</h4>
+                            <p>Growth Rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-dashboard {
+        padding: 20px;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    /* Dashboard Header - YOUR THEME */
+    .dashboard-header {
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        color: #000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .welcome-text h1 {
+        font-size: 28px;
+        margin-bottom: 5px;
+        font-weight: 700;
+        font-family: 'Playfair Display', serif;
+    }
+
+    .welcome-text p {
+        opacity: 0.9;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .date-display {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255,255,255,0.5);
+        padding: 10px 15px;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        color: #000;
+        font-weight: 500;
+    }
+
+    /* Statistics Cards - YOUR THEME */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+        }
+
+    .product-card::before {
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+    }
+
+    .customer-card::before {
+        background: linear-gradient(to right, #C1E1C1, #FFDAB9);
+    }
+
+    .order-card::before {
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+    }
+
+    .revenue-card::before {
+        background: linear-gradient(to right, #C1E1C1, #FFDAB9);
+    }
+
+    .stat-icon {
+        font-size: 40px;
+        margin-bottom: 15px;
+        color: #4CAF50; /* Your theme green */
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #2d3748;
+    }
+
+    .stat-label {
+        color: #718096;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .stat-trend {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: #4CAF50; /* Your theme green */
+    }
+
+    .trend-up {
+        color: #4CAF50; /* Your theme green */
+    }
+
+    .trend-down {
+        color: #e53e3e;
+    }
+
+    .card-hover-effect {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .stat-card:hover .card-hover-effect {
+        left: 100%;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-bottom: 25px;
+    }
+
+    .grid-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        border: 1px solid rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 25px 25px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+        .card-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #2d3748;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .card-header p {
+            color: #718096;
+            margin-bottom: 20px;
+        }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    /* Quick Actions - YOUR THEME COLORS */
+    .actions-grid {
+        display: grid;
+        gap: 15px;
+    }
+
+    .action-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+        .action-item:hover {
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+            border-color: #4CAF50;
+            transform: translateX(5px);
+            color: #000;
+        }
+
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-right: 15px;
+        color: white;
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+    }
+
+    .action-content h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 2px;
+        color: #2d3748;
+    }
+
+    .action-content p {
+        font-size: 14px;
+        color: #718096;
+        margin: 0;
+    }
+
+    .action-arrow {
+        margin-left: auto;
+        color: #cbd5e0;
+        transition: color 0.3s ease;
+    }
+
+    .action-item:hover .action-arrow {
+        color: #4CAF50;
+    }
+
+    /* Recent Orders */
+    .orders-list {
+        display: grid;
+        gap: 15px;
+    }
+
+    .order-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+        .order-item:hover {
+            border-color: #4CAF50;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+        }
+
+    .order-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        font-size: 18px;
+        margin-right: 15px;
+    }
+
+    .order-details {
+        flex: 1;
+    }
+
+        .order-details h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            color: #2d3748;
+        }
+
+        .order-details p {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+
+    .order-meta {
+        display: flex;
+        gap: 15px;
+        font-size: 12px;
+        color: #a0aec0;
+    }
+
+    .order-status {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        align-items: flex-end;
+    }
+
+    /* Status Badges - UPDATED WITH YOUR THEME */
+    .status-badge, .payment-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+        .status-badge.bg-warning {
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+            color: #000;
+        }
+
+        .status-badge.bg-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.bg-primary {
+            background: #d1e7ff;
+            color: #004085;
+        }
+
+        .status-badge.bg-success {
+            background: linear-gradient(to right, #C1E1C1, #FFDAB9);
+            color: #000;
+        }
+
+        .status-badge.bg-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .payment-badge.bg-success {
+            background: linear-gradient(to right, #C1E1C1, #FFDAB9);
+            color: #000;
+        }
+
+        .payment-badge.bg-warning {
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+            color: #000;
+        }
+
+        .payment-badge.bg-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+    /* Card Footer */
+    .card-footer {
+        padding: 20px 25px;
+        border-top: 1px solid #e2e8f0;
+        text-align: center;
+    }
+
+    .view-all-link {
+        color: #4CAF50;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: color 0.3s ease;
+    }
+
+        .view-all-link:hover {
+            color: #000;
+        }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #718096;
+    }
+
+    .empty-icon {
+        font-size: 50px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+        color: #4CAF50;
+    }
+
+    .empty-state h4 {
+        margin-bottom: 5px;
+        color: #a0aec0;
+    }
+
+    /* Performance Metrics - YOUR THEME */
+    .metrics-section {
+        margin-bottom: 30px;
+    }
+
+    .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .metric-item {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        border-radius: 10px;
+        background: #f7fafc;
+        transition: all 0.3s ease;
+    }
+
+        .metric-item:hover {
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+            transform: translateY(-2px);
+            color: #000;
+        }
+
+    .metric-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-right: 15px;
+        color: white;
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+    }
+
+    .metric-content h4 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 2px;
+        color: #2d3748;
+    }
+
+    .metric-content p {
+        font-size: 14px;
+        color: #718096;
+        margin: 0;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .admin-dashboard {
+            padding: 15px;
+        }
+
+        .header-content {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .metrics-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .metrics-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .order-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .order-status {
+            align-items: flex-start;
+        }
+    }
+</style>
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "bg-warning",
+            "confirmed" => "bg-info",
+            "shipped" => "bg-primary",
+            "delivered" => "bg-success",
+            "cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    public string GetPaymentBadgeClass(string paymentStatus)
+    {
+        return paymentStatus.ToLower() switch
+        {
+            "paid" => "bg-success",
+            "pending" => "bg-warning",
+            "failed" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

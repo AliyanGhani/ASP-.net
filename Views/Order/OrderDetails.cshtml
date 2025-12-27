@@ -1,0 +1,460 @@
+﻿@model Admin.Models.Order
+@{
+    ViewData["Title"] = "Order Details";
+
+    // Helper function for status badge
+    string GetStatusBadgeClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "pending" => "bg-warning",
+            "confirmed" => "bg-info",
+            "delivered" => "bg-success",
+            "cancelled" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+<style>
+    .container {
+        max-width: 1200px;
+        padding: 30px 20px;
+    }
+
+    h2 {
+        font-family: 'Playfair Display', serif;
+        color: #000;
+        font-weight: 700;
+        margin-bottom: 30px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #4CAF50, #81C784);
+            border-radius: 2px;
+        }
+
+    h4, h5, h6 {
+        font-family: 'Playfair Display', serif;
+        color: #000;
+        font-weight: 700;
+    }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+        overflow: hidden;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+    .card-header {
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+        color: #000;
+        border-bottom: none;
+        padding: 20px 25px;
+        font-weight: 700;
+    }
+
+        .card-header h4, .card-header h5 {
+            color: #000;
+            margin: 0;
+            font-weight: 700;
+        }
+
+    .card-body {
+        padding: 25px;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+    }
+
+        .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-outline-primary {
+        background: transparent;
+        border: 2px solid #4CAF50;
+        color: #4CAF50;
+    }
+
+        .btn-outline-primary:hover {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+            color: white;
+        }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .bg-success {
+        background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+    }
+
+    .bg-warning {
+        background: linear-gradient(135deg, #ffc107, #e0a800) !important;
+        color: #000 !important;
+    }
+
+    .bg-info {
+        background: linear-gradient(135deg, #17a2b8, #138496) !important;
+    }
+
+    .bg-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    }
+
+    .bg-secondary {
+        background: linear-gradient(135deg, #6c757d, #5a6268) !important;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+        .table th {
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+            color: #000;
+            font-weight: 600;
+            border: none;
+            padding: 15px;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-color: #f0f0f0;
+        }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(255, 218, 185, 0.1);
+    }
+
+    .table tfoot {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+
+        .table tfoot td {
+            font-weight: 700;
+            color: #000;
+            border-top: 2px solid #4CAF50;
+        }
+
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-left: 4px solid #4CAF50;
+    }
+
+        .info-section h6 {
+            color: #000;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .info-section p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .info-section strong {
+            color: #333;
+            min-width: 140px;
+            display: inline-block;
+        }
+
+    .product-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    .actions-section {
+        background: linear-gradient(135deg, #fff9e6, #fff3cd);
+        border: 1px solid #ffeeba;
+        border-radius: 15px;
+        padding: 20px;
+    }
+
+    .cancel-form {
+        display: inline;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .container {
+            padding: 20px 15px;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .table-responsive {
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .d-flex.gap-2 {
+            flex-direction: column;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        h2 {
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+            h2:after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+        .info-section {
+            padding: 15px;
+        }
+
+        .product-image {
+            width: 40px;
+            height: 40px;
+        }
+    }
+</style>
+
+<div class="container">
+    <h2>Order Details</h2>
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="@Url.Action("MyAccount", "Customer")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to My Account
+        </a>
+    </div>
+
+    <!-- Order Header -->
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h4 class="mb-0"><i class="fas fa-receipt"></i> Order #@Model.OrderId</h4>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="badge @GetStatusBadgeClass(Model.Status) fs-6">@Model.Status</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="info-section">
+                        <h6>Order Information</h6>
+                        <p><strong>Order Date:</strong> @Model.OrderDate.ToString("MMM dd, yyyy hh:mm tt")</p>
+                        <p><strong>Total Amount:</strong> Rs @Model.TotalAmount</p>
+                        <p>
+                            <strong>Payment Status:</strong>
+                            <span class="badge @(Model.PaymentStatus == "Paid" ? "bg-success" : "bg-warning")">
+                                @Model.PaymentStatus
+                            </span>
+                        </p>
+                        @if (!string.IsNullOrEmpty(Model.TransactionId))
+                        {
+                            <p><strong>Transaction ID:</strong> @Model.TransactionId</p>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="info-section">
+                        <h6>Delivery Information</h6>
+                        @if (Model.Recipient != null)
+                        {
+                            <p><strong>Recipient:</strong> @Model.Recipient.Name</p>
+                            <p><strong>Address:</strong> @Model.Recipient.Address</p>
+                            <p><strong>Phone:</strong> @Model.Recipient.PhoneNo</p>
+                            <p><strong>Delivery Date:</strong> @Model.Recipient.Date.ToString("MMM dd, yyyy")</p>
+                            @if (!string.IsNullOrEmpty(Model.Recipient.CustomMessage))
+                            {
+                                <p><strong>Message:</strong> @Model.Recipient.CustomMessage</p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No recipient information available</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-shopping-bag"></i> Order Items</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.OrderItems != null && Model.OrderItems.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/Content/Images/@item.Product.Pro_imagename"
+                                                 alt="@item.Product.Pro_name"
+                                                 class="product-image me-3"
+                                                 onerror="this.src='https://via.placeholder.com/50x50?text=Product'">
+                                            <div>
+                                                <h6 class="mb-0">@item.Product.Pro_name</h6>
+                                                <small class="text-muted">@item.Product.Pro_category</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Rs @item.Price</td>
+                                    <td>@item.Quantity</td>
+                                    <td>Rs @(item.Price* item.Quantity)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-bold">
+                                <td colspan="3" class="text-end">Total Amount:</td>
+                                <td>Rs @Model.TotalAmount</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No Items Found</h5>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Order Actions -->
+    @if (Model.Status != "Delivered" && Model.Status != "Cancelled")
+    {
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cog"></i> Order Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="actions-section">
+                    <div class="d-flex gap-2 flex-wrap">
+                        @if (Model.Status == "Pending")
+                        {
+                            <!-- Simple Form Submit for Cancel Order -->
+                            <form method="post" action="@Url.Action("CancelOrder", "Order")" class="cancel-form">
+                                <input type="hidden" name="id" value="@Model.OrderId" />
+                                <button type="submit" class="btn btn-danger"
+                                        onclick="return confirm('Are you sure you want to cancel order #@Model.OrderId?')">
+                                    <i class="fas fa-times me-2"></i> Cancel Order
+                                </button>
+                            </form>
+                        }
+                        <a href="@Url.Action("MyOrders", "Order")" class="btn btn-outline-primary">
+                            <i class="fas fa-list me-2"></i> View All Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        alert('@TempData["SuccessMessage"]');
+    </script>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <script>
+        alert('@TempData["ErrorMessage"]');
+    </script>
+}

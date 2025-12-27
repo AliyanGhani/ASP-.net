@@ -1,0 +1,729 @@
+﻿@model List<Admin.Models.Category>
+@{
+    ViewData["Title"] = "Beautiful Flowers for Every Occasion";
+
+    // ✅ FIXED: We're getting exactly 3 random categories from controller
+    var displayedCategories = Model ?? new List<Admin.Models.Category>();
+}
+
+<section class="hero">
+    <div class="container">
+        <h1 class="scroll-fade-element">Beautiful Flowers for Every Occasion</h1>
+        <p class="scroll-fade-element delay-1">Fresh, handcrafted bouquets delivered to your doorstep with love and care</p>
+        <a href="@Url.Action("Shop", "Home")" class="btn scroll-fade-element delay-2">Explore Bouquets</a>
+    </div>
+</section>
+
+<section class="container">
+    <h2 class="section-title scroll-fade-element">Browse By Occasion</h2>
+    <div class="occasions">
+        @if (displayedCategories.Any())
+        {
+            @foreach (var category in displayedCategories)
+            {
+                <div class="occasion-card scroll-fade-element">
+                    <!-- FIXED: Smart image path with multiple fallback options -->
+                    <img src="~/Content/CategoryImages/@category.ImageName"
+                         alt="@category.CategoryName"
+                         class="occasion-img"
+                         onerror="handleCategoryImageError(this, '@category.CategoryName')">
+                    <div class="occasion-content">
+                        <h3>@category.CategoryName</h3>
+                        <p>@category.Description</p>
+                        <a href="@Url.Action("ProductsByCategory", "Home", new { categoryId = category.CategoryId })" class="btn">View Options</a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-categories scroll-fade-element">
+                <p>No categories available at the moment.</p>
+            </div>
+        }
+    </div>
+</section>
+<section class="container">
+    <h2 class="section-title scroll-fade-element">Featured Bouquets</h2>
+    <div class="bouquets">
+        @if (ViewBag.RandomProducts != null && ((List<Admin.Models.Products>)ViewBag.RandomProducts).Any())
+        {
+            var randomProducts = (List<Admin.Models.Products>)ViewBag.RandomProducts;
+            @foreach (var product in randomProducts)
+            {
+                <div class="bouquet-card scroll-fade-element">
+                    <img src="~/Content/Images/@product.Pro_imagename"
+                         alt="@product.Pro_name"
+                         class="bouquet-img"
+                         onerror="handleProductImageError(this, '@product.Pro_name')">
+                    <div class="bouquet-content">
+                        <h3>@product.Pro_name</h3>
+                        <p>@product.Pro_des</p>
+                        <div class="bouquet-price">Rs @product.Pro_price.ToString("0.00")</div>
+                        <a href="@Url.Action("ProductDetails", "Home", new { id = product.Pro_id })" class="btn">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <!-- Fallback to static bouquets if no products available -->
+            <div class="bouquet-card scroll-fade-element">
+                <img src="~/images/card (3).jpg" alt="Spring Bliss" class="bouquet-img"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300/FFB6C1/FFFFFF?text=Spring+Bliss'">
+                <div class="bouquet-content">
+                    <h3>Spring Bliss</h3>
+                    <p>A vibrant mix of seasonal flowers to brighten any room</p>
+                    <div class="bouquet-price">Rs 45.99</div>
+                    <a href="#" class="btn">Add to Cart</a>
+                </div>
+            </div>
+
+            <div class="bouquet-card scroll-fade-element delay-1">
+                <img src="~/images/1 (5).jpg" alt="Eternal Romance" class="bouquet-img"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300/FFB6C1/FFFFFF?text=Eternal+Romance'">
+                <div class="bouquet-content">
+                    <h3>Eternal Romance</h3>
+                    <p>Red roses and white lilies for that special someone</p>
+                    <div class="bouquet-price">Rs 59.99</div>
+                    <a href="#" class="btn">Add to Cart</a>
+                </div>
+            </div>
+
+            <div class="bouquet-card scroll-fade-element delay-2">
+                <img src="~/images/card (4).jpg" alt="Sunshine Delight" class="bouquet-img"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/400x300/FFB6C1/FFFFFF?text=Sunshine+Delight'">
+                <div class="bouquet-content">
+                    <h3>Sunshine Delight</h3>
+                    <p>Sunflowers and daisies to bring cheer to any day</p>
+                    <div class="bouquet-price">Rs 39.99</div>
+                    <a href="#" class="btn">Add to Cart</a>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<br>
+<br>
+
+<h1 class="deals-title scroll-fade-element">This Season's Best Deals</h1>
+
+<div class="deals-container">
+    <div class="deal-card scroll-fade-element">
+        <img src="~/images/Capture1.PNG" alt="Deal 1"
+             onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200/FFB6C1/FFFFFF?text=40%+OFF'">
+        <div class="deal-overlay">
+            <span class="deal-badge">40% OFF</span>
+        </div>
+    </div>
+    <div class="deal-card scroll-fade-element delay-1">
+        <img src="~/images/Capture2.PNG" alt="Deal 2"
+             onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200/FFB6C1/FFFFFF?text=September+Bouquet'">
+        <div class="deal-overlay">
+            <span class="deal-badge">Special Offer</span>
+        </div>
+    </div>
+    <div class="deal-card scroll-fade-element delay-2">
+        <img src="~/images/Capture3.PNG" alt="Deal 3"
+             onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200/FFB6C1/FFFFFF?text=30%+OFF'">
+        <div class="deal-overlay">
+            <span class="deal-badge">30% OFF</span>
+        </div>
+    </div>
+    <div class="deal-card scroll-fade-element delay-3">
+        <img src="~/images/Capture4.PNG" alt="Deal 4"
+             onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200/FFB6C1/FFFFFF?text=25%+OFF'">
+        <div class="deal-overlay">
+            <span class="deal-badge">25% OFF</span>
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+<br>
+
+<div class="hero1">
+    <div class="offer-banner scroll-fade-element">
+        LIMITED-TIME OFFER
+    </div>
+
+    <h1 class="scroll-fade-element">Special Flower Collection</h1>
+    <p class="scroll-fade-element delay-1">Make your moments unforgettable with our exclusive bouquets</p>
+    <a href="@Url.Action("Shop", "Home")" class="btn scroll-fade-element delay-2">Shop Now</a>
+</div>
+
+<style>
+    /* Your existing CSS remains exactly the same */
+    /* florist.css */
+
+    /* Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f9f6f2;
+        color: #333;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* NEW SCROLL FADE ANIMATION STYLES */
+    .scroll-fade-element {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+        .scroll-fade-element.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    /* Staggered delays for smooth sequential animation */
+    .delay-1 {
+        transition-delay: 0.2s;
+    }
+
+    .delay-2 {
+        transition-delay: 0.4s;
+    }
+
+    .delay-3 {
+        transition-delay: 0.6s;
+    }
+
+    .delay-4 {
+        transition-delay: 0.8s;
+    }
+
+    /* Smooth scrolling for the whole page */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    /* Hero Section (Main) */
+    .hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/images/Herobanner.jpg');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 200px 20px;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+    .btn {
+        display: inline-block;
+        background-color: #FFDAB9;
+        color: black;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .btn:hover {
+            background-color: #C1E1C1;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    /* Occasions/Bouquets Section */
+    .section-title {
+        text-align: center;
+        margin-bottom: 40px;
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        color: #000000;
+    }
+
+    /* ✅ FIXED: 3-Column Grid Layout (only 3 categories) */
+    .occasions {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .bouquets {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .occasion-card, .bouquet-card {
+        background-color: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+        .occasion-card:hover, .bouquet-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+    .occasion-img, .bouquet-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-bottom: 3px solid #FFDAB9;
+    }
+
+    .occasion-content, .bouquet-content {
+        padding: 25px;
+    }
+
+        .occasion-content h3, .bouquet-content h3 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: #000000;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .occasion-content p, .bouquet-content p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+    .bouquet-price {
+        font-size: 22px;
+        font-weight: bold;
+        color: #E91E63;
+        margin-bottom: 20px;
+    }
+
+    /* No Categories Style */
+    .no-categories {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Deals Section - FIXED */
+    .deals-title {
+        color: black;
+        text-align: center;
+        font-weight: bolder;
+        margin-bottom: 40px;
+        font-size: 50px;
+        font-family: 'Playfair Display', serif;
+    }
+
+    .deals-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .deal-card {
+        position: relative;
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 250px;
+    }
+
+        .deal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .deal-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .deal-overlay {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+
+    .deal-badge {
+        background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Hero Section with Sticker (hero1) */
+    .hero1 {
+        position: relative;
+        background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/CTABannert.jpg');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        color: white;
+        text-align: left;
+        padding: 60px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        min-height: 500px;
+        margin-bottom: 40px;
+        border-radius: 15px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Limited Time Offer Banner */
+    .offer-banner {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: #000000;
+        color: rgb(255, 255, 255);
+        font-weight: bold;
+        font-size: 16px;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-transform: uppercase;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+        .offer-banner:hover {
+            background-color: #FFDAB9;
+            color: rgb(0, 0, 0);
+            cursor: pointer;
+        }
+
+    /* Heading Styling */
+    .hero1 h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        margin: 0 0 20px 0;
+        line-height: 1.2;
+        color: #ffffff;
+    }
+
+    /* Paragraph Styling */
+    .hero1 p {
+        font-size: 24px;
+        max-width: 600px;
+        margin: 0 0 30px 0;
+        color: #ffffff;
+        font-family: 'Playfair Display', serif;
+    }
+
+    /* Button Styling */
+    .hero1 .btn {
+        background-color: #000000;
+        color: rgb(255, 255, 255);
+        margin-bottom: 40px;
+    }
+
+        .hero1 .btn:hover {
+            background-color: #FFDAB9;
+            color: black;
+        }
+
+    /* Media Queries */
+    @@media (max-width: 1024px) {
+        .occasions {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .bouquets {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .deals-container {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .hero h1 {
+            font-size: 36px;
+        }
+
+        .hero1 h1 {
+            font-size: 36px;
+        }
+
+        .occasions,
+        .bouquets,
+        .deals-container {
+            grid-template-columns: 1fr;
+        }
+
+        .deals-title {
+            font-size: 36px;
+        }
+
+        .hero1 {
+            text-align: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .deal-card {
+            height: 200px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .hero {
+            padding: 60px 20px;
+        }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+        .section-title {
+            font-size: 28px;
+        }
+
+        .deals-title {
+            font-size: 28px;
+        }
+    }
+</style>
+
+<script>
+    // Enhanced category image error handling
+    function handleCategoryImageError(img, categoryName) {
+        console.warn(`Category image not found for: ${categoryName}`, img.src);
+
+        // Remove the error handler to prevent infinite loop
+        img.onerror = null;
+
+        // Try alternative image names based on category
+        const alternativeImages = getAlternativeImages(categoryName);
+        let currentTry = 0;
+
+        function tryNextAlternative() {
+            if (currentTry < alternativeImages.length) {
+                const newSrc = `/images/${alternativeImages[currentTry]}`;
+                console.log(`Trying alternative image: ${newSrc}`);
+                img.src = newSrc;
+                currentTry++;
+
+                // Check if this image loads
+                setTimeout(() => {
+                    if (!img.complete || img.naturalWidth === 0) {
+                        tryNextAlternative();
+                    }
+                }, 100);
+            } else {
+                // All alternatives failed, use placeholder
+                console.log(`All image alternatives failed, using placeholder for: ${categoryName}`);
+                img.src = `https://via.placeholder.com/400x300/FFB6C1/FFFFFF?text=${encodeURIComponent(categoryName)}`;
+            }
+        }
+
+        tryNextAlternative();
+    }
+
+    // Get alternative image names for categories
+    function getAlternativeImages(categoryName) {
+        const alternatives = {
+            'Get Well Soon': ['getwell.jpg', 'getwell.png', 'get-well.jpg', 'card (3).jpg', '1 (5).jpg'],
+            'Sympathy': ['sympathy.jpg', 'sympathy.png', 'condolence.jpg', 'card (4).jpg'],
+            'New Baby': ['baby.jpg', 'baby.png', 'newbaby.jpg', 'congratulations.jpg', 'card (3).jpg']
+        };
+
+        // Find matching category (case insensitive)
+        const matchedCategory = Object.keys(alternatives).find(key =>
+            categoryName.toLowerCase().includes(key.toLowerCase()) ||
+            key.toLowerCase().includes(categoryName.toLowerCase())
+        );
+
+        return matchedCategory ? alternatives[matchedCategory] : ['default-category.jpg', 'card (3).jpg', '1 (5).jpg', 'card (4).jpg'];
+    }
+
+    // Scroll Animation Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('=== SCROLL ANIMATIONS INITIALIZED ===');
+
+        // Initialize scroll animations
+        initScrollAnimations();
+
+        // Enhanced image debugging
+        console.log('=== CATEGORY DEBUG INFO ===');
+
+        const categoryCards = document.querySelectorAll('.occasion-card');
+        categoryCards.forEach((card, index) => {
+            const title = card.querySelector('h3')?.textContent || 'Unknown Category';
+            const img = card.querySelector('img');
+            console.log(`Category ${index + 1}: "${title}"`, {
+                imageSrc: img.src,
+                imageAlt: img.alt
+            });
+        });
+
+        // Test all category images
+        const categoryImages = document.querySelectorAll('.occasion-img');
+        categoryImages.forEach((img, index) => {
+            const testImage = new Image();
+            testImage.onload = function() {
+                console.log(`✅ Category image loaded: ${img.src}`);
+            };
+            testImage.onerror = function() {
+                console.warn(`❌ Category image missing: ${img.src}`);
+            };
+            testImage.src = img.src;
+        });
+    });
+
+    function initScrollAnimations() {
+        const elements = document.querySelectorAll('.scroll-fade-element');
+
+        // Create intersection observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Element is in viewport - add visible class
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, 100);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        // Observe all scroll fade elements
+        elements.forEach(el => {
+            observer.observe(el);
+        });
+
+        // Enhanced scroll event for smooth animations
+        let ticking = false;
+        window.addEventListener('scroll', function() {
+            if (!ticking) {
+                requestAnimationFrame(function() {
+                    updateScrollAnimations();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+
+        // Initial check
+        updateScrollAnimations();
+    }
+
+    function updateScrollAnimations() {
+        const elements = document.querySelectorAll('.scroll-fade-element');
+        const windowHeight = window.innerHeight;
+
+        elements.forEach(el => {
+            const elementTop = el.getBoundingClientRect().top;
+            const elementVisible = 150;
+
+            if (elementTop < windowHeight - elementVisible) {
+                // Element is in viewport
+                setTimeout(() => {
+                    el.classList.add('visible');
+                }, 100);
+            }
+        });
+    }
+
+    // Re-initialize animations when page is fully loaded
+    window.addEventListener('load', function() {
+        setTimeout(initScrollAnimations, 500);
+    });
+
+    // Handle resize events
+    window.addEventListener('resize', function() {
+        setTimeout(initScrollAnimations, 100);
+    });
+
+        // ✅ NEW: Product image error handling
+    function handleProductImageError(img, productName) {
+        console.warn(`Product image not found for: ${productName}`, img.src);
+        img.onerror = null;
+        const alternativeImages = getProductAlternativeImages(productName);
+        let currentTry = 0;
+
+        function tryNextAlternative() {
+            if (currentTry < alternativeImages.length) {
+                const newSrc = `/images/${alternativeImages[currentTry]}`;
+                console.log(`Trying alternative product image: ${newSrc}`);
+                img.src = newSrc;
+                currentTry++;
+                setTimeout(() => {
+                    if (!img.complete || img.naturalWidth === 0) {
+                        tryNextAlternative();
+                    }
+                }, 100);
+            } else {
+                console.log(`All product image alternatives failed, using placeholder for: ${productName}`);
+                img.src = `https://via.placeholder.com/400x300/FFB6C1/FFFFFF?text=${encodeURIComponent(productName)}`;
+            }
+        }
+        tryNextAlternative();
+    }
+
+    // ✅ NEW: Get alternative image names for products
+    function getProductAlternativeImages(productName) {
+        const fallbacks = ['card (3).jpg', '1 (5).jpg', 'card (4).jpg', 'default-product.jpg'];
+
+        if (productName.toLowerCase().includes('rose')) {
+            return ['roses.jpg', 'roses.png', ...fallbacks];
+        } else if (productName.toLowerCase().includes('lily')) {
+            return ['lilies.jpg', 'lilies.png', ...fallbacks];
+        } else if (productName.toLowerCase().includes('sunflower')) {
+            return ['sunflowers.jpg', 'sunflowers.png', ...fallbacks];
+        }
+
+        return fallbacks;
+    }
+</script>

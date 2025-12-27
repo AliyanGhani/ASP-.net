@@ -1,0 +1,62 @@
+﻿@model Admin.Models.OccasionMessage
+@{
+    ViewData["Title"] = "Add Occasion Message";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-plus-circle"></i> Add Occasion Message</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddOccasionMessage" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="OccasionName" class="form-label">Occasion Name <span class="text-danger">*</span></label>
+                            <input asp-for="OccasionName" class="form-control" placeholder="e.g., Birthday, Anniversary, Wedding">
+                            <span asp-validation-for="OccasionName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Messages" class="form-label">Message <span class="text-danger">*</span></label>
+                            <textarea asp-for="Messages" class="form-control" rows="5"
+                                      placeholder="Enter the predefined message for this occasion"></textarea>
+                            <span asp-validation-for="Messages" class="text-danger small"></span>
+                            <div class="form-text">This message will be available for customers to select during checkout.</div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-save"></i> Save Message
+                            </button>
+                            <a asp-action="OccasionMessages" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Client-side validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const occasionName = document.getElementById('OccasionName').value.trim();
+            const message = document.getElementById('Messages').value.trim();
+
+            if (!occasionName || !message) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+    </script>
+}

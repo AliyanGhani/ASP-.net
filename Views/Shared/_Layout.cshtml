@@ -1,0 +1,614 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Online Florist</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a asp-controller="Home" asp-action="Index" class="logo">Online Florist</a>
+
+                <!-- Hamburger Menu Icon -->
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <ul class="nav-links" id="navLinks">
+                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-controller="Home" asp-action="About">About Flowers</a></li>
+
+                    <li class="dropdown">
+                        <a asp-controller="Home" asp-action="Shop">Shop</a>
+                    </li>
+
+                    <li><a asp-controller="Home" asp-action="Registration">Florist Registration</a></li>
+                    <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                </ul>
+
+                <div class="nav-right">
+                    @if (Context.Session.GetInt32("CustomerId") != null)
+                    {
+                        <!-- My Account -->
+                        <a asp-controller="Customer" asp-action="MyAccount" title="My Account" class="nav-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </a>
+
+                        <!-- Cart -->
+                        <a asp-controller="Cart" asp-action="ViewCart" class="nav-icon cart-icon" title="View Cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" id="cartCount">@(Context.Session.GetInt32("CartCount") ?? 0)</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <!-- Login -->
+                        <a asp-controller="Customer" asp-action="Login" title="Login" class="nav-icon">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </a>
+                    }
+
+                    <!-- Admin Login -->
+                    <a asp-controller="Admin" asp-action="Login" title="Admin Login" class="admin-login-link">
+                        <i class="fas fa-cogs"></i> Admin
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <footer class="custom-footer">
+        <div class="container">
+            <div class="footer-row">
+                <h1>Online Florist</h1>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <a asp-controller="Home" asp-action="About">About Us</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Blog</a>
+                    <a asp-controller="Home" asp-action="Contact">Contact</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Categories</h3>
+                    @{
+                        // Categories with their IDs
+                        var categories = new List<CategoryItem>
+                                        {
+                                        new CategoryItem { Id = 1, Name = "Birthday Flowers" },
+                                        new CategoryItem { Id = 2, Name = "Wedding Bouquets" },
+                                        new CategoryItem { Id = 3, Name = "Anniversary Flowers" },
+                                        new CategoryItem { Id = 4, Name = "Mother’s Day Flowers" },
+                                        new CategoryItem { Id = 5, Name = "Father’s Day Flowers" },
+                                        new CategoryItem { Id = 6, Name = "New Baby Flowers" }
+                                        };
+                    }
+
+                    @foreach (var category in categories)
+                    {
+                        <a href="@Url.Action("ProductsByCategory", "Home", new { categoryId = category.Id })">
+                            @category.Name
+                        </a>
+                    }
+                </div>
+                <div class="footer-column">
+                    <h3>Customer Service</h3>
+                    <a href="#">My Account</a>
+                    <a asp-controller="Cart" asp-action="ViewCart">View Cart</a>
+                    <a href="#">Order Tracking</a>
+                    <a href="#">Shipping Info</a>
+                    <a href="#">Returns & Refunds</a>
+                    <a href="#">Help Center</a>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-home"></i> Karachi, Pakistan</p>
+                    <p><i class="fas fa-envelope"></i> info@onlineflorist.com</p>
+                    <p><i class="fas fa-phone"></i> +92 300 1234567</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sun: 9AM - 8PM</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            © 2024 Online Florist — All Rights Reserved | Made with <i class="fas fa-heart" style="color: #ff0000;"></i> for Flower Lovers
+        </div>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        // Custom JS for Cart Count
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+
+            // Hamburger Menu Toggle
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+
+            hamburger.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                hamburger.classList.toggle('active');
+            });
+        });
+
+        function updateCartCount() {
+            fetch('@Url.Action("GetCartCount", "Cart")')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const cartCount = document.getElementById('cartCount');
+                    if (cartCount) {
+                        cartCount.textContent = data.count || 0;
+                    }
+                })
+                .catch(error => console.error('Error fetching cart count:', error));
+        }
+    </script>
+
+    <style>
+        /* Navbar Styling */
+        header {
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+            .nav-links li {
+                position: relative;
+                margin: 0 15px;
+            }
+
+            .nav-links a {
+                color: rgb(0, 0, 0);
+                text-decoration: none;
+                font-size: 18px;
+                font-weight: 500;
+                padding: 10px 0;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+
+                .nav-links a:after {
+                    content: '';
+                    position: absolute;
+                    width: 0;
+                    height: 3px;
+                    background: rgb(0, 0, 0);
+                    left: 0;
+                    bottom: 0;
+                    transition: width 0.3s ease;
+                }
+
+                .nav-links a:hover {
+                    color: #4CAF50 !important;
+                }
+
+                    .nav-links a:hover:after {
+                        width: 100%;
+                        background: #4CAF50 !important;
+                    }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: rgb(0, 0, 0);
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+            top: 100%;
+            left: 0;
+        }
+
+            .dropdown-content a {
+                color: #ffffff;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+                font-size: 16px;
+                transition: all 0.3s ease;
+            }
+
+                .dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                    color: #4CAF50;
+                }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-icon {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+            .nav-icon:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+                transform: translateY(-2px);
+            }
+
+        .cart-icon {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e91e63;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-login-link {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white !important;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+            .admin-login-link:hover {
+                background: linear-gradient(135deg, #34495e, #2c3e50);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                color: white !important;
+            }
+
+            .admin-login-link i {
+                font-size: 16px;
+            }
+
+            .admin-login-link:after {
+                display: none !important;
+            }
+
+        .custom-footer {
+            background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+            color: rgb(0, 0, 0);
+            padding: 40px 20px 20px;
+            font-family: 'Roboto', sans-serif;
+            margin-top: 50px;
+        }
+
+        .footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+            .footer-row h1 {
+                margin: 0;
+                font-size: 36px;
+                font-weight: bold;
+                font-family: 'Playfair Display', serif;
+            }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+            .footer-social a {
+                font-size: 28px;
+                transition: transform 0.3s, color 0.3s;
+                color: #000000;
+            }
+
+                .footer-social a:hover {
+                    transform: scale(1.3);
+                }
+
+            .footer-social .fa-facebook-f:hover {
+                color: #3b5998;
+            }
+
+            .footer-social .fa-twitter:hover {
+                color: #55acee;
+            }
+
+            .footer-social .fa-google:hover {
+                color: #dd4b39;
+            }
+
+            .footer-social .fa-instagram:hover {
+                color: #e4405f;
+            }
+
+            .footer-social .fa-linkedin-in:hover {
+                color: #0077b5;
+            }
+
+            .footer-social .fa-github:hover {
+                color: #333;
+            }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: left;
+            margin-bottom: 30px;
+            align-items: start;
+        }
+
+        .footer-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+            .footer-column h3 {
+                margin-bottom: 20px;
+                font-size: 20px;
+                border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+                padding-bottom: 10px;
+                font-weight: 700;
+            }
+
+            .footer-column a {
+                display: block;
+                color: #000000;
+                text-decoration: none;
+                margin-bottom: 10px;
+                font-size: 16px;
+                transition: all 0.3s ease;
+                padding: 5px 0;
+            }
+
+                .footer-column a:hover {
+                    color: #4CAF50;
+                    text-decoration: none;
+                    transform: translateX(5px);
+                }
+
+            .footer-column p {
+                font-size: 15px;
+                margin: 8px 0;
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                line-height: 1.4;
+                transition: all 0.3s ease;
+                cursor: default;
+            }
+
+                .footer-column p:hover {
+                    color: #4CAF50 !important;
+                    transform: translateX(5px);
+                }
+
+                    .footer-column p:hover i {
+                        color: #4CAF50 !important;
+                    }
+
+                .footer-column p i {
+                    width: 20px;
+                    text-align: center;
+                    margin-top: 2px;
+                    transition: all 0.3s ease;
+                }
+
+        .footer-bottom {
+            text-align: center;
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+            .footer-bottom i {
+                margin: 0 5px;
+            }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+            .hamburger span {
+                width: 25px;
+                height: 3px;
+                background: rgb(0, 0, 0);
+                margin: 3px 0;
+                transition: 0.3s;
+                border-radius: 2px;
+            }
+
+            .hamburger.active span:nth-child(1) {
+                transform: rotate(-45deg) translate(-5px, 6px);
+            }
+
+            .hamburger.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active span:nth-child(3) {
+                transform: rotate(45deg) translate(-5px, -6px);
+            }
+
+        /* Mobile Responsive */
+        @@media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
+
+                .nav-links.active {
+                    display: flex;
+                }
+
+                .nav-links li {
+                    margin: 10px 0;
+                    width: 100%;
+                    text-align: center;
+                }
+
+                .nav-links a {
+                    display: block;
+                    padding: 15px;
+                    width: 100%;
+                }
+
+            .navbar {
+                flex-wrap: wrap;
+            }
+
+            .nav-right {
+                margin-top: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                display: none;
+            }
+
+            .nav-links.active + .nav-right {
+                display: flex;
+            }
+
+            .admin-login-link {
+                margin-left: 0;
+                margin-top: 10px;
+                text-align: center;
+            }
+
+            .footer-row {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .footer-links {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 30px;
+            }
+
+            .footer-column a:hover {
+                transform: none;
+            }
+
+            .footer-column p:hover {
+                transform: none;
+            }
+
+            .footer-column p {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+
+        main {
+            min-height: calc(100vh - 200px);
+        }
+    </style>
+</body>
+</html>
+
+@functions {
+    // Simple class for category items
+    public class CategoryItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+}

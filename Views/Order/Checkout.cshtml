@@ -1,0 +1,285 @@
+﻿@model Admin.Models.CheckoutModel
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<style>
+    .container {
+        max-width: 1200px;
+        padding: 20px;
+    }
+
+    h2 {
+        font-family: 'Playfair Display', serif;
+        color: #000;
+        font-weight: 700;
+        margin-bottom: 30px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #4CAF50, #81C784);
+            border-radius: 2px;
+        }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+        overflow: hidden;
+        background: white;
+    }
+
+    .card-header {
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+        color: #000;
+        border-bottom: none;
+        padding: 20px;
+    }
+
+        .card-header h4 {
+            color: #000;
+            margin: 0;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+        }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e1e1e1;
+        padding: 12px 15px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+        }
+
+    .btn-success {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        border: none;
+        border-radius: 50px;
+        padding: 15px 30px;
+        font-weight: 600;
+        font-size: 18px;
+        letter-spacing: 0.5px;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+        }
+
+    .btn-primary {
+        background: linear-gradient(to right, #FFDAB9, #C1E1C1);
+        border: none;
+        border-radius: 50px;
+        padding: 12px 25px;
+        font-weight: 600;
+        color: #000;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 218, 185, 0.3);
+            color: #000;
+        }
+
+    .alert-warning {
+        background: linear-gradient(135deg, #fff9e6, #fff3cd);
+        border: 1px solid #ffeeba;
+        border-radius: 15px;
+        color: #856404;
+        text-align: center;
+        padding: 30px;
+    }
+
+    .order-item {
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+
+        .order-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+    .total-amount {
+        font-size: 1.3rem;
+        color: #4CAF50;
+        font-weight: bold;
+    }
+
+    .delivery-info {
+        background-color: #f8f9fa;
+        border-left: 4px solid #4CAF50;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+        line-height: 1.6;
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn-success {
+            padding: 12px 20px;
+            font-size: 16px;
+        }
+    }
+</style>
+
+<div class="container">
+    <h2>Checkout</h2>
+
+    @if (Model.Cart?.CartItems?.Any() == true)
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Delivery Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" asp-action="ProcessCheckout">
+                            <div class="mb-3">
+                                <label class="form-label">Recipient Name *</label>
+                                <input type="text" class="form-control" asp-for="Recipient.Name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Delivery Address *</label>
+                                <textarea class="form-control" asp-for="Recipient.Address" required rows="3"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="number" class="form-control" asp-for="Recipient.PhoneNo" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Delivery Date *</label>
+                                <input type="datetime-local" class="form-control" asp-for="Recipient.Date" required
+                                       min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Occasion Message</label>
+                                <select class="form-control" onchange="setMessage(this)">
+                                    <option value="">Select Occasion</option>
+                                    @if (ViewBag.OccasionMessages != null)
+                                    {
+                                        foreach (var msg in ViewBag.OccasionMessages)
+                                        {
+                                            <option value="@msg.Messages">@msg.OccasionName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Custom Message</label>
+                                <textarea class="form-control" asp-for="CustomMessage" rows="3"
+                                          placeholder="Or write your own message"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-success btn-lg w-100">Place Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Order Summary</h4>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in Model.Cart.CartItems)
+                        {
+                            <div class="order-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6>@item.Product.Pro_name</h6>
+                                        <small>Qty: @item.Quantity</small>
+                                    </div>
+                                    <span>Rs @(item.Price* item.Quantity)</span>
+                                </div>
+                            </div>
+                        }
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold total-amount">
+                            <span>Total Amount:</span>
+                            <span>Rs @Model.Cart.TotalAmount</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-body delivery-info">
+                        <h5>Delivery Information</h5>
+                        <p class="small text-muted">
+                            • Delivery within 5 hours during working hours (9 AM - 9 PM)<br>
+                            • Same day delivery if ordered before 4 PM<br>
+                            • Next day delivery for orders after 4 PM
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning text-center">
+            <h4>Your cart is empty</h4>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function setMessage(select) {
+            if (select.value) {
+                document.getElementById('CustomMessage').value = select.value;
+            }
+        }
+    </script>
+}

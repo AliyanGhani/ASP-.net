@@ -1,0 +1,417 @@
+﻿@{
+    ViewData["Title"] = "Contact Us - Java Florist";
+}
+
+<style>
+    /* Contact Hero Section */
+    .contact-hero {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1464207687429-7505649dae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        text-align: center;
+        padding: 200px 20px;
+        margin-bottom: 40px;
+    }
+
+        .contact-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .contact-hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+    /* Contact Cards */
+    .contact-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    .contact-card {
+        background: #FFDAB9;
+        padding: 40px 30px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .contact-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+    .contact-icon {
+        font-size: 50px;
+        color: #000;
+        margin-bottom: 20px;
+    }
+
+    .contact-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #000;
+    }
+
+    .contact-card p {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .contact-card .contact-detail {
+        font-size: 18px;
+        font-weight: 600;
+        color: #000;
+    }
+
+    /* Contact Form Section */
+    .contact-form-section {
+        background: linear-gradient(135deg, #fff7f0, #ffe4c4);
+        padding: 60px 40px;
+        border-radius: 15px;
+        margin-bottom: 60px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .form-title {
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        margin-bottom: 40px;
+        color: #333;
+        position: relative;
+    }
+
+        .form-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: #05a005;
+            margin: 12px auto 0;
+            border-radius: 2px;
+        }
+
+    .contact-form {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #FFDAB9;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+        .form-control:focus {
+            border-color: #C1E1C1;
+            box-shadow: 0 0 0 0.2rem rgba(193, 225, 193, 0.25);
+            outline: none;
+        }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #FFDAB9, #C1E1C1);
+        color: #000;
+        border: none;
+        padding: 15px 40px;
+        font-size: 18px;
+        font-weight: 600;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: block;
+        margin: 0 auto;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    /* Map Section */
+    .map-section {
+        margin-bottom: 60px;
+    }
+
+    .map-container {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        height: 400px;
+    }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+    /* Store Info */
+    .store-info {
+        background: #FFDAB9;
+        padding: 40px;
+        border-radius: 15px;
+        margin-bottom: 60px;
+    }
+
+    .store-hours {
+        margin-top: 30px;
+    }
+
+        .store-hours h4 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+    .hours-list {
+        list-style: none;
+        padding: 0;
+    }
+
+        .hours-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .hours-list li:last-child {
+                border-bottom: none;
+            }
+
+    /* FAQ Section */
+    .faq-section {
+        background: linear-gradient(135deg, #fff7f0, #ffe4c4);
+        padding: 60px 40px;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .faq-title {
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        margin-bottom: 40px;
+        color: #333;
+        position: relative;
+    }
+
+        .faq-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: #05a005;
+            margin: 12px auto 0;
+            border-radius: 2px;
+        }
+
+    .faq-grid {
+        display: grid;
+        gap: 25px;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .faq-item {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    }
+
+        .faq-item h4 {
+            color: #000;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .faq-item p {
+            color: #666;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .contact-hero h1 {
+            font-size: 36px;
+        }
+
+        .contact-hero p {
+            font-size: 18px;
+        }
+
+        .contact-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .contact-form-section {
+            padding: 40px 20px;
+        }
+
+        .form-title, .faq-title {
+            font-size: 28px;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <h1>Get in Touch 🌸</h1>
+        <p>We're here to help you create beautiful moments with flowers. Reach out to us for any inquiries or special requests.</p>
+    </div>
+</section>
+
+<!-- Contact Cards -->
+<section class="container">
+    <div class="contact-cards">
+        <div class="contact-card">
+            <div class="contact-icon">📞</div>
+            <h3>Call Us</h3>
+            <p class="contact-detail">+92 300 1234567</p>
+            <p>Mon-Sun, 9:00 AM - 9:00 PM</p>
+        </div>
+        <div class="contact-card">
+            <div class="contact-icon">📧</div>
+            <h3>Email Us</h3>
+            <p class="contact-detail">info@javaflorist.com</p>
+            <p>We reply within 2 hours</p>
+        </div>
+        <div class="contact-card">
+            <div class="contact-icon">📍</div>
+            <h3>Visit Us</h3>
+            <p class="contact-detail">Karachi, Pakistan</p>
+            <p>Come see our beautiful collection</p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Form -->
+<section class="container">
+    <div class="contact-form-section">
+        <h2 class="form-title">Send Us a Message</h2>
+        <form class="contact-form">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Your Name *</label>
+                        <input type="text" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Your Email *</label>
+                        <input type="email" class="form-control" placeholder="Enter your email address" required>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Subject</label>
+                <input type="text" class="form-control" placeholder="What is this regarding?">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Message *</label>
+                <textarea class="form-control" placeholder="Tell us how we can help you..." required></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="container map-section">
+    <h2 class="form-title">Find Us</h2>
+    <div class="map-container">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3618.664321146547!2d67.0301143150055!3d24.906151984029185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33f5da50d33e1%3A0x2d5c4b2c8b5b3b3b!2sKarachi%2C%20Pakistan!5e0!3m2!1sen!2s!4v1620000000000!5m2!1sen!2s"
+                allowfullscreen="" loading="lazy"></iframe>
+    </div>
+</section>
+
+<!-- Store Information -->
+<section class="container">
+    <div class="store-info">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Java Florist Store</h3>
+                <p><strong>Address:</strong> Main Commercial Area, Phase 5, DHA, Karachi, Pakistan</p>
+                <p><strong>Phone:</strong> +92 300 1234567</p>
+                <p><strong>Email:</strong> info@javaflorist.com</p>
+            </div>
+            <div class="col-md-6">
+                <div class="store-hours">
+                    <h4>Store Hours</h4>
+                    <ul class="hours-list">
+                        <li><span>Monday - Friday:</span> <span>9:00 AM - 9:00 PM</span></li>
+                        <li><span>Saturday:</span> <span>10:00 AM - 8:00 PM</span></li>
+                        <li><span>Sunday:</span> <span>11:00 AM - 6:00 PM</span></li>
+                        <li><span>Public Holidays:</span> <span>11:00 AM - 4:00 PM</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="container">
+    <div class="faq-section">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <h4>Do you offer same-day delivery?</h4>
+                <p>Yes! We offer same-day delivery for orders placed before 4 PM within Karachi city limits.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Can I customize my bouquet?</h4>
+                <p>Absolutely! We love creating custom arrangements. Contact us with your ideas and we'll bring your vision to life.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What are your payment options?</h4>
+                <p>We accept credit cards, debit cards, bank transfers, and cash on delivery for your convenience.</p>
+            </div>
+            <div class="faq-item">
+                <h4>Do you deliver outside Karachi?</h4>
+                <p>Currently, we only deliver within Karachi city limits to ensure the freshness of our flowers.</p>
+            </div>
+            <div class="faq-item">
+                <h4>How far in advance should I place my order?</h4>
+                <p>We recommend placing orders at least 24 hours in advance, but we accommodate last-minute orders whenever possible.</p>
+            </div>
+            <div class="faq-item">
+                <h4>What if I'm not satisfied with my order?</h4>
+                <p>Your satisfaction is guaranteed! If you're not happy with your arrangement, contact us within 24 hours for a replacement or refund.</p>
+            </div>
+        </div>
+    </div>
+</section>

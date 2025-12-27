@@ -1,0 +1,277 @@
+﻿@model Admin.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer Registration - Java Florist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .auth-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 200px);
+        padding: 40px 0;
+    }
+
+    .auth-image {
+        flex: 1;
+        min-width: 300px;
+        max-width: 500px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-right: 40px;
+    }
+
+        .auth-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+    .auth-form-container {
+        flex: 1;
+        min-width: 300px;
+        max-width: 500px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .auth-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .auth-header p {
+            color: #666;
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+    .btn {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+        .btn:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+        }
+
+    .btn-outline {
+        background-color: transparent;
+        border: 1px solid #4CAF50;
+        color: #4CAF50;
+    }
+
+        .btn-outline:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+    .alert {
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .text-danger {
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    @@media (max-width: 768px) {
+        .auth-container {
+            flex-direction: column;
+        }
+
+        .auth-image {
+            margin-right: 0;
+            margin-bottom: 30px;
+            max-width: 100%;
+        }
+
+        .auth-form-container {
+            max-width: 100%;
+        }
+
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-image">
+            <img src="https://images.unsplash.com/photo-1464207687429-7505649dae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Beautiful Flowers">
+        </div>
+
+        <div class="auth-form-container">
+            <div class="auth-header">
+                <h2>Create Account</h2>
+                <p>Join Java Florist today</p>
+            </div>
+
+            <!-- Success/Error Messages -->
+            @if (TempData["success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    <strong>Success!</strong> @TempData["success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <strong>Error!</strong> @TempData["error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form asp-action="Register" method="post" id="registerForm">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="F_name">First Name <span class="text-danger">*</span></label>
+                        <input asp-for="F_name" class="form-control" placeholder="First name">
+                        <span asp-validation-for="F_name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="L_name">Last Name <span class="text-danger">*</span></label>
+                        <input asp-for="L_name" class="form-control" placeholder="Last name">
+                        <span asp-validation-for="L_name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label asp-for="Dob">Date of Birth <span class="text-danger">*</span></label>
+                        <input asp-for="Dob" type="date" class="form-control" max="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        <span asp-validation-for="Dob" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Gender">Gender <span class="text-danger">*</span></label>
+                        <select asp-for="Gender" class="form-control">
+                            <option value="">-- Select Gender --</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                            <option value="O">Other</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="P_no">Phone Number <span class="text-danger">*</span></label>
+                    <input asp-for="P_no" type="number" class="form-control" placeholder="Enter 10-digit phone number">
+                    <span asp-validation-for="P_no" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Address">Address <span class="text-danger">*</span></label>
+                    <textarea asp-for="Address" class="form-control" rows="3" placeholder="Enter your complete address"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+
+                <a asp-action="Login" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i> Already have an account? Login
+                </a>
+
+                <a asp-action="Index" asp-controller="Home" class="btn btn-outline">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Phone number validation
+            const phoneInput = document.getElementById('P_no');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    const phone = this.value;
+                    if (phone.length !== 10) {
+                        this.setCustomValidity('Phone number must be 10 digits');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
+            }
+
+            // Date validation
+            const dobInput = document.getElementById('Dob');
+            if (dobInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dobInput.setAttribute('max', today);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,101 @@
+﻿@model Admin.Models.Products
+@{
+    ViewData["Title"] = "Edit Product";
+    Layout = "_AdminLayout";
+
+    // Get categories from database
+    var categories = ViewBag.Categories as List<Admin.Models.Category> ?? new List<Admin.Models.Category>();
+}
+
+<div class="container-fluid mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0"><i class="fas fa-edit"></i> Edit Product</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditProduct" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Pro_id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pro_name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                            <input asp-for="Pro_name" class="form-control" required>
+                            <span asp-validation-for="Pro_name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pro_des" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea asp-for="Pro_des" class="form-control" rows="3" required></textarea>
+                            <span asp-validation-for="Pro_des" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pro_category" class="form-label">Category <span class="text-danger">*</span></label>
+                            <select asp-for="Pro_category" class="form-control" required>
+                                <option value="">-- Select Category --</option>
+                                @foreach (var category in categories)
+                                {
+                                    <option value="@category.CategoryName">@category.CategoryName</option>
+                                }
+                            </select>
+                            @if (!categories.Any())
+                            {
+                                <small class="text-warning">No categories found. Please add categories first.</small>
+                            }
+                            <span asp-validation-for="Pro_category" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pro_price" class="form-label">Price (Rs) <span class="text-danger">*</span></label>
+                            <input asp-for="Pro_price" type="number" class="form-control" min="1" max="100000" step="0.01" required>
+                            <span asp-validation-for="Pro_price" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Current Image</label>
+                            <div>
+                                <img src="~/Content/Images/@Model.Pro_imagename"
+                                     alt="@Model.Pro_name"
+                                     style="width: 150px; height: 150px; object-fit: cover;"
+                                     onerror="this.src='https://via.placeholder.com/150x150?text=Product'"
+                                     class="rounded border">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Pro_img" class="form-label">Update Product Image</label>
+                            <input asp-for="Pro_img" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.jfif">
+                            <small class="form-text text-muted">Leave empty to keep current image. Supported formats: JPG, JPEG, PNG, WEBP, JFIF - Max 10MB</small>
+                            <span asp-validation-for="Pro_img" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-save"></i> Update Product
+                            </button>
+                            <a asp-action="Products" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+</style>

@@ -1,0 +1,360 @@
+﻿@model Admin.Models.Products
+
+@{
+    ViewData["Title"] = Model.Pro_name;
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="product-image-container">
+                @if (!string.IsNullOrEmpty(Model.Pro_imagename))
+                {
+                    <img src="~/Content/Images/@Model.Pro_imagename" class="img-fluid rounded"
+                         alt="@Model.Pro_name"
+                         onerror="this.src='https://via.placeholder.com/500x500?text=No+Image'">
+                }
+                else
+                {
+                    <div class="bg-light d-flex align-items-center justify-content-center rounded"
+                         style="height: 400px; background: linear-gradient(to right, #FFDAB9, #C1E1C1) !important;">
+                        <i class="fas fa-image text-muted" style="font-size: 4rem;"></i>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="product-details">
+                <span class="badge category-badge mb-2">@Model.Pro_category</span>
+                <h1 class="product-title">@Model.Pro_name</h1>
+                <h2 class="product-price">Rs @Model.Pro_price</h2>
+
+                <div class="product-description mt-4">
+                    <h5>Description</h5>
+                    <p class="text-muted">@Model.Pro_des</p>
+                </div>
+
+                <div class="product-actions mt-4">
+                    <div class="quantity-selector mb-3">
+                        <label for="quantity" class="form-label">Quantity:</label>
+                        <div class="input-group quantity-group" style="width: 150px;">
+                            <button type="button" class="btn quantity-btn" onclick="decreaseQuantity()">-</button>
+                            <input type="number" class="form-control text-center quantity-input" id="quantity" name="quantity" value="1" min="1" max="10">
+                            <button type="button" class="btn quantity-btn" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <!-- Traditional Form Submission for Add to Cart -->
+                        @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "d-inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.Pro_id" />
+                            <input type="hidden" name="quantity" id="formQuantity" value="1" />
+                            <button type="submit" class="btn primary-btn btn-lg w-100">
+                                <i class="fas fa-cart-plus"></i> Add to Cart
+                            </button>
+                        }
+
+                        <!-- Back to Shop Button -->
+                        <a href="@Url.Action("Shop", "Home")"
+                           class="btn secondary-btn">
+                            <i class="fas fa-arrow-left"></i> Back to Shop
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product-features mt-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="feature-item text-center">
+                                <i class="fas fa-shipping-fast feature-icon mb-2"></i>
+                                <p class="small mb-0">Free Delivery</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="feature-item text-center">
+                                <i class="fas fa-clock feature-icon mb-2"></i>
+                                <p class="small mb-0">5-Hour Delivery</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Quantity buttons functionality
+        function increaseQuantity() {
+            console.log('Increase button clicked');
+            const quantityInput = document.getElementById('quantity');
+            const formQuantity = document.getElementById('formQuantity');
+
+            if (parseInt(quantityInput.value) < 10) {
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+                formQuantity.value = quantityInput.value;
+            }
+        }
+
+        function decreaseQuantity() {
+            console.log('Decrease button clicked');
+            const quantityInput = document.getElementById('quantity');
+            const formQuantity = document.getElementById('formQuantity');
+
+            if (parseInt(quantityInput.value) > 1) {
+                quantityInput.value = parseInt(quantityInput.value) - 1;
+                formQuantity.value = quantityInput.value;
+            }
+        }
+
+        // Update form quantity when input changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInput = document.getElementById('quantity');
+            const formQuantity = document.getElementById('formQuantity');
+
+            if (quantityInput && formQuantity) {
+                quantityInput.addEventListener('input', function() {
+                    formQuantity.value = this.value;
+                });
+            }
+
+            // Prevent form submission on quantity input enter key
+            if (quantityInput) {
+                quantityInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Add form submission handler for better UX
+            const addToCartForm = document.querySelector('form');
+            if (addToCartForm) {
+                addToCartForm.addEventListener('submit', function(e) {
+                    console.log('Form submitted');
+                    // You can add loading indicator here if needed
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                        submitButton.disabled = true;
+                    }
+                });
+            }
+
+            // Debug: Check the back button URL
+            const backButton = document.querySelector('.secondary-btn');
+            if (backButton) {
+                console.log('Back to Shop URL:', backButton.href);
+            }
+        });
+    </script>
+}
+
+<style>
+    /* Theme-based Styling */
+    .product-image-container {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border: 2px solid #FFDAB9;
+    }
+
+    .product-title {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 2.2rem;
+    }
+
+    .product-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #4CAF50;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .category-badge {
+        background: linear-gradient(135deg, #FFDAB9, #C1E1C1);
+        color: #000;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .primary-btn {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        cursor: pointer;
+    }
+
+        .primary-btn:hover {
+            background: linear-gradient(135deg, #45a049, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+            color: white;
+        }
+
+        .primary-btn:disabled {
+            background: #cccccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+    .secondary-btn {
+        background: linear-gradient(135deg, #FFDAB9, #C1E1C1);
+        color: #000;
+        border: 2px solid #FFDAB9;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+
+        .secondary-btn:hover {
+            background: linear-gradient(135deg, #C1E1C1, #FFDAB9);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 218, 185, 0.4);
+            color: #000;
+            border-color: #C1E1C1;
+            text-decoration: none;
+        }
+
+    .feature-item {
+        padding: 1rem;
+        border: 2px solid #FFDAB9;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #FFF9F5, #F8FFF8);
+        transition: all 0.3s ease;
+    }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 218, 185, 0.3);
+            border-color: #4CAF50;
+        }
+
+    .feature-icon {
+        font-size: 1.8rem;
+        color: #4CAF50;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .quantity-group {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #FFDAB9;
+        background: white;
+    }
+
+    .quantity-btn {
+        background: linear-gradient(135deg, #FFDAB9, #C1E1C1);
+        border: none;
+        color: #000;
+        font-weight: bold;
+        padding: 8px 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .quantity-btn:hover {
+            background: linear-gradient(135deg, #C1E1C1, #FFDAB9);
+            color: #000;
+        }
+
+    .quantity-input {
+        border: none;
+        background: #FFF9F5;
+        font-weight: 600;
+        color: #2c3e50;
+        outline: none;
+    }
+
+        .quantity-input:focus {
+            box-shadow: none;
+            background: #FFF9F5;
+        }
+
+    .product-description h5 {
+        color: #2c3e50;
+        font-weight: 600;
+        border-bottom: 2px solid #FFDAB9;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+    }
+
+    .product-details {
+        background: linear-gradient(135deg, #FFF9F5, #F8FFF8);
+        padding: 30px;
+        border-radius: 15px;
+        border: 2px solid #FFDAB9;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    /* Form styling */
+    form {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Button active states */
+    .quantity-btn:active,
+    .primary-btn:active,
+    .secondary-btn:active {
+        transform: translateY(0) !important;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .product-title {
+            font-size: 1.8rem;
+        }
+
+        .product-price {
+            font-size: 2rem;
+        }
+
+        .product-details {
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .primary-btn, .secondary-btn {
+            padding: 10px 20px;
+            font-size: 0.9rem;
+        }
+    }
+
+    /* Animation for page load */
+    .product-image-container, .product-details {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

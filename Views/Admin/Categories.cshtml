@@ -1,0 +1,277 @@
+﻿@model List<Admin.Models.Category>
+@{
+    ViewData["Title"] = "Manage Categories";
+    Layout = "_AdminLayout";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tags me-2"></i>Categories Management</h2>
+    <a href="@Url.Action("AddCategory")" class="btn btn-success">
+        <i class="fas fa-plus"></i> Add New Category
+    </a>
+</div>
+
+<!-- Success/Error Messages -->
+@if (TempData["success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> @TempData["error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Categories</h5>
+    </div>
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Category Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@category.CategoryId</td>
+                                <td>
+                                    <!-- YAHAN PATH CHANGE KARO - Product jaisa hi path use karo -->
+                                    <img src="~/Content/CategoryImages/@category.ImageName"
+                                         alt="@category.CategoryName"
+                                         style="width: 60px; height: 60px; object-fit: cover;"
+                                         onerror="this.src='https://via.placeholder.com/60x60/4CAF50/FFFFFF?text=@Uri.EscapeDataString(category.CategoryName)'"
+                                         class="rounded border">
+                                </td>
+                                <td>
+                                    <strong>@category.CategoryName</strong>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(category.Description))
+                                    {
+                                        <span class="text-muted">@category.Description</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">No description</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(category.IsActive ? "success" : "danger")">
+                                        <i class="fas fa-@(category.IsActive ? "check" : "times") me-1"></i>
+                                        @(category.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="@Url.Action("EditCategory", new { id = category.CategoryId })"
+                                           class="btn btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-outline-@(category.IsActive ? "warning" : "success") toggle-status"
+                                                data-id="@category.CategoryId"
+                                                data-name="@category.CategoryName"
+                                                title="@(category.IsActive ? "Deactivate" : "Activate")">
+                                            <i class="fas fa-@(category.IsActive ? "pause" : "play")"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger delete-category"
+                                                data-id="@category.CategoryId"
+                                                data-name="@category.CategoryName"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No Categories Found</h4>
+                <p class="text-muted mb-4">Get started by adding your first category to organize your products.</p>
+                <a href="@Url.Action("AddCategory")" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Add Your First Category
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Loading Spinner -->
+<div id="loadingSpinner" class="d-none text-center py-3">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+    <p class="mt-2 text-muted">Processing...</p>
+</div>
+
+@section Scripts {
+    <script>
+        // Image debug function
+        function debugCategoryImages() {
+            console.log('=== CATEGORY IMAGES DEBUG ===');
+            const images = document.querySelectorAll('img[src*="images/"]');
+
+            images.forEach((img, index) => {
+                console.log(`Image ${index + 1}:`, {
+                    src: img.src,
+                    alt: img.alt,
+                    naturalWidth: img.naturalWidth,
+                    naturalHeight: img.naturalHeight,
+                    complete: img.complete
+                });
+
+                // Test if image loaded successfully
+                if (img.naturalWidth === 0) {
+                    console.warn(`❌ Image failed to load: ${img.src}`);
+                } else {
+                    console.log(`✅ Image loaded successfully: ${img.src}`);
+                }
+            });
+        }
+
+        // Run debug on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            debugCategoryImages();
+        });
+
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').classList.remove('d-none');
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').classList.add('d-none');
+        }
+
+        // Helper function to show alerts
+        function showAlert(type, message) {
+            // Remove existing alerts
+            document.querySelectorAll('.dynamic-alert').forEach(alert => alert.remove());
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show dynamic-alert`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle me-2"></i> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.card-body').insertBefore(alertDiv, document.querySelector('.table-responsive'));
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentElement) {
+                    const bsAlert = new bootstrap.Alert(alertDiv);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+
+        // Toggle category status
+        document.querySelectorAll('.toggle-status').forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-id');
+                const categoryName = this.getAttribute('data-name');
+                const isActive = this.classList.contains('btn-outline-warning');
+
+                const action = isActive ? 'deactivate' : 'activate';
+
+                if (confirm(`Are you sure you want to ${action} the category "${categoryName}"?`)) {
+                    showLoading();
+
+                    fetch(`/Admin/ToggleCategoryStatus?id=${categoryId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        hideLoading();
+                        if (result.success) {
+                            showAlert('success', result.message);
+                            setTimeout(() => location.reload(), 1000);
+                        } else {
+                            showAlert('danger', 'Error: ' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        showAlert('danger', 'Network error: ' + error.message);
+                    });
+                }
+            });
+        });
+
+        // Delete category
+        document.querySelectorAll('.delete-category').forEach(button => {
+            button.addEventListener('click', function() {
+                const categoryId = this.getAttribute('data-id');
+                const categoryName = this.getAttribute('data-name');
+
+                if (confirm(`Are you sure you want to delete the category "${categoryName}"? This action cannot be undone.`)) {
+                    showLoading();
+
+                    fetch(`/Admin/DeleteCategory?id=${categoryId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        hideLoading();
+                        if (result.success) {
+                            showAlert('success', result.message);
+                            const row = this.closest('tr');
+                            row.style.transition = 'all 0.5s ease';
+                            row.style.opacity = '0.3';
+                            setTimeout(() => location.reload(), 2000);
+                        } else {
+                            showAlert('danger', 'Error: ' + result.message);
+                        }
+                    })
+                    .catch(error => {
+                        hideLoading();
+                        showAlert('danger', 'Network error: ' + error.message);
+                    });
+                }
+            });
+        });
+
+        // Auto-dismiss alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert.parentElement) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "Registration Successful - Java Florist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .success-container {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        margin: 40px auto;
+        max-width: 600px;
+    }
+
+    .success-icon {
+        font-size: 80px;
+        color: #4CAF50;
+        margin-bottom: 20px;
+    }
+
+    .success-container h1 {
+        font-family: 'Playfair Display', serif;
+        color: #4CAF50;
+        margin-bottom: 20px;
+    }
+
+    .success-container p {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    .btn {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        margin: 0 10px;
+    }
+
+        .btn:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+        }
+
+    .btn-outline {
+        background-color: transparent;
+        border: 1px solid #4CAF50;
+        color: #4CAF50;
+    }
+
+        .btn-outline:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+</style>
+
+<div class="container">
+    <div class="success-container">
+        <div class="success-icon">✅</div>
+        <h1>Registration Successful!</h1>
+        <p>Thank you for your interest in becoming a Java Florist partner. We have received your application and will review it within 3 business days.</p>
+        <p>Our team will contact you at the email address you provided.</p>
+        <div class="mt-4">
+            <a href="@Url.Action("Index", "Home")" class="btn">Back to Home</a>
+            <a href="@Url.Action("Shop", "Home")" class="btn btn-outline">Browse Products</a>
+        </div>
+    </div>
+</div>

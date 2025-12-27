@@ -1,0 +1,377 @@
+﻿@model List<Admin.Models.Products>
+@{
+    ViewData["Title"] = ViewBag.Category + " Bouquets";
+}
+
+<style>
+    /* Category Header */
+    .category-header {
+        background: linear-gradient(135deg, #FFDAB9 0%, #C1E1C1 100%);
+        padding: 40px 20px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        text-align: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+        .category-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        .category-header p {
+            font-size: 20px;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+    /* Products Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: #05a005;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .product-image-container {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-bottom: 3px solid #FFDAB9;
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .sold-out-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0,0,0,0.7);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .product-content {
+        padding: 20px;
+    }
+
+    .product-category {
+        color: #666;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+
+    .product-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #000;
+    }
+
+    .product-description {
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-price {
+        font-size: 22px;
+        font-weight: bold;
+        color: #05a005;
+        margin-bottom: 15px;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-view {
+        flex: 2;
+        background: #FFDAB9;
+        color: #000;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+    }
+
+        .btn-view:hover {
+            background: #C1E1C1;
+            transform: translateY(-2px);
+            text-decoration: none;
+            color: #000;
+        }
+
+    .btn-cart {
+        flex: 1;
+        background: #C1E1C1;
+        color: #000;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+        .btn-cart:hover {
+            background: #FFDAB9;
+            transform: translateY(-2px);
+        }
+
+    .btn-disabled {
+        flex: 1;
+        background: #ccc;
+        color: #666;
+        border: none;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: not-allowed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #666;
+    }
+
+        .empty-state i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: #FFDAB9;
+        }
+
+        .empty-state h3 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 30px;
+    }
+
+    .breadcrumb-item a {
+        color: #666;
+        text-decoration: none;
+    }
+
+        .breadcrumb-item a:hover {
+            color: #000;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .category-header h1 {
+            font-size: 36px;
+        }
+
+        .category-header p {
+            font-size: 18px;
+        }
+
+        .products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .product-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="container mt-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li class="breadcrumb-item active">@ViewBag.Category</li>
+        </ol>
+    </nav>
+
+    <!-- Category Header -->
+    <div class="category-header">
+        <h1>@ViewBag.Category Bouquets</h1>
+        <p>@ViewBag.CategoryDescription</p>
+    </div>
+
+    <!-- Products Grid -->
+    @if (Model.Any())
+    {
+        <div class="products-grid">
+            @foreach (var product in Model)
+            {
+                <div class="product-card">
+                    <!-- Product Badges -->
+                    @if (product.Pro_price < 50)
+                    {
+                        <div class="product-badge">Great Value</div>
+                    }
+                    else if (product.Pro_price > 100)
+                    {
+                        <div class="product-badge">Premium</div>
+                    }
+
+                    @if (!product.IsAvailable)
+                    {
+                        <div class="sold-out-badge">Out of Stock</div>
+                    }
+
+                    <!-- Product Image -->
+                    <div class="product-image-container">
+                        <img src="~/Content/Images/@(product.Pro_imagename ?? "default-product.jpg")"
+                             class="product-image"
+                             alt="@product.Pro_name"
+                             onerror="this.src='https://via.placeholder.com/400x300/FFDAB9/C1E1C1?text=@Uri.EscapeDataString(product.Pro_name)'">
+                    </div>
+
+                    <!-- Product Content -->
+                    <div class="product-content">
+                        <div class="product-category">@product.Pro_category</div>
+                        <h3 class="product-title">@product.Pro_name</h3>
+                        <p class="product-description">@product.Pro_des</p>
+                        <div class="product-price">Rs @product.Pro_price</div>
+
+                        <div class="product-actions">
+                            <a href="@Url.Action("ProductDetails", "Home", new { id = product.Pro_id })" class="btn-view">
+                                View Details
+                            </a>
+
+                            @if (product.IsAvailable)
+                            {
+                                using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "d-inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@product.Pro_id" />
+                                    <input type="hidden" name="quantity" value="1" />
+                                    <button type="submit" class="btn-cart" title="Add to Cart">
+                                        🛒
+                                    </button>
+                                }
+                            }
+                            else
+                            {
+                                <button class="btn-disabled" disabled title="Out of Stock">
+                                    ❌
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div>🌸</div>
+            <h3>No Bouquets Found</h3>
+            <p>We don't have any bouquets in this category at the moment.</p>
+            <a href="@Url.Action("Index", "Home")" class="btn-view" style="display: inline-block; padding: 12px 30px; margin-top: 20px;">
+                Back to Categories
+            </a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Add to Cart animation
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.btn-cart').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const form = this.closest('form');
+                    if (!form) return;
+
+                    // Store original content
+                    const originalHTML = this.innerHTML;
+                    const originalBackground = this.style.background;
+
+                    // Add animation
+                    this.innerHTML = '✓';
+                    this.style.background = '#05a005';
+                    this.style.color = 'white';
+
+                    // Restore original appearance after 2 seconds
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.style.background = originalBackground;
+                        this.style.color = '#000';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+}
