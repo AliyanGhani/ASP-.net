@@ -107,6 +107,32 @@ FloristEcommerceApp
   "DefaultConnection": "Server=.;Database=FloristEcommerceDb;Trusted_Connection=True;TrustServerCertificate=True;"
 }
 
+-git clone https://github.com/AliyanGhani/florist-ecommerce-app.git
+
+-cd florist-ecommerce-app
+
+Apply Entity Framework Core migrations
+
+This command will automatically create the database and tables:
+
+Update-Database
+
+
+Run the application
+
+dotnet run
+
+
+The application will be available at:
+
+http://localhost:5000
+
+
+or
+
+https://localhost:5001
+
+
 ## ⚙ Getting Started
 
 Follow the steps below to run this project locally.
